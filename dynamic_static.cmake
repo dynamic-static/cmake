@@ -44,10 +44,10 @@ endfunction()
 function(dst_setup_target)
     cmake_parse_arguments(args "" "target;folder" "includeDirectories;includeFiles;sourceFiles;linkLibraries;compileDefinitions" ${ARGN})
     target_include_directories(${args_target} PUBLIC "${args_includeDirectories}")
-    target_link_libraries(${args_target} "${args_linkLibraries}")
+    target_link_libraries(${args_target} PUBLIC "${args_linkLibraries}")
     target_compile_definitions(${args_target} PUBLIC "${args_compileDefinitions}")
     set_target_properties(${args_target} PROPERTIES LINKER_LANGUAGE CXX)
-    target_compile_features(${args_target} PUBLIC cxx_std_17)
+    # target_compile_features(${args_target} PUBLIC cxx_std_17)
     dst_create_file_group("${args_includeFiles}")
     dst_create_file_group("${args_sourceFiles}")
     if(args_folder)
@@ -87,23 +87,23 @@ endfunction()
 
 # TODO : Documentation
 function(dst_add_test_suite)
-    cmake_parse_arguments(args "" "target" "includeDirectories;includeFiles;sourceFiles;compileDefinitions" ${ARGN})
-    set(catchSourceDirectory "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/external/Catch2/")
-    set(catchBinaryDirectory "${CMAKE_CURRENT_BINARY_DIR}/catch2/")
-    set(catchCpp "${catchBinaryDirectory}/catch.cpp")
-    if(NOT TARGET Catch2::Catch2)
-        add_subdirectory("${catchSourceDirectory}" "${catchBinaryDirectory}")
-    endif()
-    if(NOT EXISTS ${catchCpp})
-        file(WRITE "${catchCpp}" "\n#define CATCH_CONFIG_MAIN\n#include \"catch2/catch.hpp\"\n")
-    endif()
-    dst_add_executable(
-        target ${args_target}.tests
-        folder ${args_target}
-        linkLibraries ${args_target} Catch2::Catch2
-        includeDirectories "${args_includeDirectories}"
-        sourceFiles "${args_sourceFiles}" "${catchCpp}"
-    )
-    enable_testing()
-    add_test(NAME ${args_target}.tests COMMAND ${args_target}.tests)
+    #### cmake_parse_arguments(args "" "target" "includeDirectories;includeFiles;sourceFiles;compileDefinitions" ${ARGN})
+    #### set(catchSourceDirectory "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/external/Catch2/")
+    #### set(catchBinaryDirectory "${CMAKE_CURRENT_BINARY_DIR}/catch2/")
+    #### set(catchCpp "${catchBinaryDirectory}/catch.cpp")
+    #### if(NOT TARGET Catch2::Catch2)
+    ####     add_subdirectory("${catchSourceDirectory}" "${catchBinaryDirectory}")
+    #### endif()
+    #### if(NOT EXISTS ${catchCpp})
+    ####     file(WRITE "${catchCpp}" "\n#define CATCH_CONFIG_MAIN\n#include \"catch2/catch.hpp\"\n")
+    #### endif()
+    #### dst_add_executable(
+    ####     target ${args_target}.tests
+    ####     folder ${args_target}
+    ####     linkLibraries ${args_target} Catch2::Catch2
+    ####     includeDirectories "${args_includeDirectories}"
+    ####     sourceFiles "${args_sourceFiles}" "${catchCpp}"
+    #### )
+    #### enable_testing()
+    #### add_test(NAME ${args_target}.tests COMMAND ${args_target}.tests)
 endfunction()
