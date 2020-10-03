@@ -86,7 +86,7 @@ function(dst_add_static_library)
 endfunction()
 
 # TODO : Documentation
-function(dst_add_test_suite)
+function(dst_add_target_test_suite)
     cmake_parse_arguments(args "" "target" "includeDirectories;includeFiles;sourceFiles;compileDefinitions" ${ARGN})
     set(catchSourceDirectory "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/external/Catch2/")
     set(catchBinaryDirectory "${CMAKE_CURRENT_BINARY_DIR}/catch2/")
