@@ -107,3 +107,37 @@ function(dst_add_target_test_suite)
     enable_testing()
     add_test(NAME ${args_target}.tests COMMAND ${args_target}.tests)
 endfunction()
+
+# TODO : Documentation
+function(dst_add_external_cmake_project)
+    cmake_parse_arguments(args "" "project;sourceDirectory;buildDirectory" "options" ${ARGN})
+    add_library(${args_project} INTERFACE)
+    if(NOT TARGET external)
+        add_custom_target(external ALL)
+    ENDIF()
+    add_dependencies(${args_project} external)
+    file(MAKE_DIRECTORY ${args_buildDirectory})
+    execute_process(
+        COMMAND ${CMAKE_COMMAND} -G "${CMAKE_GENERATOR}" ${args_options} "${args_sourceDirectory}"
+        WORKING_DIRECTORY "${args_buildDirectory}"
+        RESULT_VARIABLE error
+    )
+    if(error)
+        message(FATAL_ERROR "CMake configuration for ${args_project} failed [${error}]")
+    endif()
+    if(MSVC)
+        add_custom_command(
+            PRE_BUILD
+            TARGET external
+            COMMAND ${CMAKE_COMMAND} --build . --config $<CONFIG> -- /verbosity:minimal
+            WORKING_DIRECTORY "${args_buildDirectory}"
+        )
+    else()
+        add_custom_command(
+            PRE_BUILD
+            TARGET external
+            COMMAND "$(MAKE)"
+            WORKING_DIRECTORY "${args_buildDirectory}"
+        )
+    endif()
+endfunction()
