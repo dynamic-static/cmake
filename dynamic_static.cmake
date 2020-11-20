@@ -141,3 +141,8 @@ function(dst_add_external_cmake_project)
         )
     endif()
 endfunction()
+
+# TODO : Documentation
+function(dst_make_available dstProjectName)
+    
+endfunction()
