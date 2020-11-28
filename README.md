@@ -1,1 +1,1 @@
-# cmake
+# dynamic_static.build
