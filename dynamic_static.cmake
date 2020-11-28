@@ -1,6 +1,6 @@
 
 # ==========================================
-#   Copyright (c) 2016-2020 Dynamic_Static
+#   Copyright (c) 2016-2020 dynamic_static
 #     Patrick Purcell
 #       Licensed under the MIT license
 #     http://opensource.org/licenses/MIT
@@ -15,6 +15,7 @@ message("Post include_guard() : ${CMAKE_CURRENT_LIST_DIR}")
 include(CheckCxxCompilerFlag)
 include(CmakeParseArguments)
 include(ExternalProject)
+include(FetchContent)
 
 # TODO : Documentation
 function(dst_add_subdirectory dstDependency)
@@ -88,19 +89,17 @@ endfunction()
 # TODO : Documentation
 function(dst_add_target_test_suite)
     cmake_parse_arguments(args "" "target" "includeDirectories;includeFiles;sourceFiles;compileDefinitions" ${ARGN})
-    set(catchSourceDirectory "${CMAKE_CURRENT_FUNCTION_LIST_DIR}/external/Catch2/")
-    set(catchBinaryDirectory "${CMAKE_CURRENT_BINARY_DIR}/catch2/")
-    set(catchCpp "${catchBinaryDirectory}/catch.cpp")
-    if(NOT TARGET Catch2::Catch2)
-        add_subdirectory("${catchSourceDirectory}" "${catchBinaryDirectory}")
-    endif()
+    FetchContent_Declare(Catch2 GIT_REPOSITORY "https://github.com/catchorg/Catch2.git" GIT_TAG v2.13.3 GIT_PROGRESS TRUE)
+    FetchContent_MakeAvailable(Catch2)
+    FetchContent_GetProperties(Catch2 BINARY_DIR binaryDirectory)
+    set(catchCpp "${binaryDirectory}/catch.cpp")
     if(NOT EXISTS ${catchCpp})
         file(WRITE "${catchCpp}" "\n#define CATCH_CONFIG_MAIN\n#include \"catch2/catch.hpp\"\n")
     endif()
     dst_add_executable(
         target ${args_target}.tests
         folder ${args_target}
-        linkLibraries ${args_target} Catch2::Catch2
+        linkLibraries ${args_target} Catch2
         includeDirectories "${args_includeDirectories}"
         sourceFiles "${args_sourceFiles}" "${catchCpp}"
     )
